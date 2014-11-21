@@ -157,6 +157,6 @@ class Control(BaseControl):
         calculations.  This method is called immediately
         following the game_input_control() method.
         """
-
+        print engine.get_data()
         return
 

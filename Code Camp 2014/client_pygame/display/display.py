@@ -96,13 +96,13 @@ class Display(BaseDisplay):
         # The values are how much red, green, and blue to use in the color.
         # Check out http://www.colorpicker.com/ if you want to try out
         # colors and find their RGB values.
-        self.player_color     = (255, 255, 0)
-        self.opponent_color   = (255, 0, 0)
+        self.player_color     = (255, 0, 0)
+        self.opponent_color   = (0, 0, 0)
         self.missile_color    = (0, 0, 255)
         self.npc_color        = (255, 255, 0)
-        self.wall_color       = (255, 255, 255)
-        self.text_color       = (255, 255, 255)
-        self.background_color = (0, 255, 0)
+        self.wall_color       = (50, 50, 50)
+        self.text_color       = (0, 0, 255)
+        self.background_color = (255, 255, 255)
         return
 
     def paint_pregame(self, surface, control):
