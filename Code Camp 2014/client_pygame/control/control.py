@@ -130,7 +130,8 @@ class Control(BaseControl):
             engine.set_player_speed_stop()
         elif pygame.K_2 in newkeys:
             engine.set_player_speed_slow()
-            
+        elif pygame.K_3 in newkeys:
+            engine.set_player_speed_fast()
         if pygame.K_q in newkeys:
             engine.set_missile_range_none()
         elif pygame.K_w in newkeys:
@@ -144,8 +145,8 @@ class Control(BaseControl):
         if pygame.K_SPACE in newkeys:
             engine.fire_missile()
 
-        if pygame.K_i in newkeys:
-            self.show_info = not self.show_info
+
+        self.show_info = True
 
         return
         
@@ -157,6 +158,5 @@ class Control(BaseControl):
         calculations.  This method is called immediately
         following the game_input_control() method.
         """
-        print engine.get_data()
         return
 

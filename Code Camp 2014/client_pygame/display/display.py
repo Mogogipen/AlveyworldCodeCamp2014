@@ -103,6 +103,11 @@ class Display(BaseDisplay):
         self.wall_color       = (50, 50, 50)
         self.text_color       = (0, 0, 255)
         self.background_color = (255, 255, 255)
+        self.player_image     = pygame.image.load("display/player.png")
+        self.opponent_image   = pygame.image.load("display/opponent.png")
+        self.missile_image    = pygame.image.load("display/missile.png")
+        self.npc_image        = pygame.image.load("display/npc.png")
+        self.wall_image       = pygame.image.load("display/wall.png")
         return
 
     def paint_pregame(self, surface, control):
@@ -196,7 +201,8 @@ class Display(BaseDisplay):
         Draws walls.
         """
         rect = self.obj_to_rect(obj)
-        pygame.draw.rect(surface, self.wall_color, rect)
+        # pygame.draw.rect(surface, self.wall_color, rect)
+        surface.blit(self.wall_image, (obj.get_px(), obj.get_py()))
         return
         
     def paint_npc(self, surface, engine, control, obj):
@@ -206,7 +212,8 @@ class Display(BaseDisplay):
         if obj.is_alive():
             color = self.npc_color
             rect = self.obj_to_rect(obj)
-            pygame.draw.rect(surface, color, rect)
+            # pygame.draw.rect(surface, color, rect)
+            surface.blit(self.npc_image, (obj.get_px(), obj.get_py()))
         return
         
     def paint_missile(self, surface, engine, control, obj):
@@ -216,7 +223,8 @@ class Display(BaseDisplay):
         if obj.is_alive():
             color = self.missile_color
             rect = self.obj_to_rect(obj)
-            pygame.draw.rect(surface, color, rect)
+            # pygame.draw.rect(surface, color, rect)
+            surface.blit(self.missile_image, (obj.get_px(), obj.get_py()))
         return
         
     def paint_player(self, surface, engine, control, obj):
@@ -225,12 +233,15 @@ class Display(BaseDisplay):
         My player is my opponent are in different colors
         """
         if obj.is_alive():
-            rect = self.obj_to_rect(obj)
+            # rect = self.obj_to_rect(obj)
+            surface.blit(self.player_image, (obj.get_px(), obj.get_py()))
             if obj.get_oid() == engine.get_player_oid():
                 color = self.player_color
+                surface.blit(self.opponent_image, (obj.get_px(), obj.get_py()))
             else:
                 color = self.opponent_color
-            pygame.draw.rect(surface, color, rect)
+            # pygame.draw.rect(surface, color, rect)
+            surface.blit(self.player_image, (obj.get_px(), obj.get_py()))
         return
 
     def paint_game_status(self, surface, engine, control):
