@@ -98,7 +98,7 @@ class Display(BaseDisplay):
         # colors and find their RGB values.
         self.player_color     = (255, 255, 0)
         self.opponent_color   = (255, 0, 0)
-        self.missile_color    = (0, 255, 255)
+        self.missile_color    = (0, 0, 255)
         self.npc_color        = (255, 255, 0)
         self.wall_color       = (255, 255, 255)
         self.text_color       = (255, 255, 255)
