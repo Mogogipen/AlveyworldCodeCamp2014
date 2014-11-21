@@ -4,6 +4,7 @@
 #
 
 import pygame
+import math
 from client.base_control import *
 
 class Control(BaseControl):
@@ -144,8 +145,9 @@ class Control(BaseControl):
         if pygame.K_SPACE in newkeys:
             engine.fire_missile()
 
-        if pygame.K_i in newkeys:
-            self.show_info = not self.show_info
+        self.show_info = True
+
+        self.point_at_opponent(engine, mouse_position)
 
         return
         
@@ -157,6 +159,55 @@ class Control(BaseControl):
         calculations.  This method is called immediately
         following the game_input_control() method.
         """
-        print engine.get_data()
+        
+        
+
+        game_objects = engine.get_objects()
+        for o in game_objects:
+            if engine.get_object(o).is_wall():
+                print "Wall", o
+                pass
+
         return
+
+    def point_at_opponent(self, engine, mouse_position):
+        """
+        find the opponent and point the missile at him
+        """
+        #point missile towards opponent
+        opp = engine.get_object(engine.get_opponent_oid())
+        pl = engine.get_object(engine.get_player_oid())
+        (mouse_x, mouse_y) = mouse_position
+        
+        try:
+            x = pl.get_x()
+            y = pl.get_y()
+            ox = mouse_x
+            oy = mouse_y
+            dx = abs(x - ox)
+            dy = abs(y - oy)
+            
+            if x >= ox and y >= oy:
+                angle = 90 - math.degrees(math.atan(dx/dy))
+            if x <= ox and y <= oy:
+                angle = 270 - math.degrees(math.atan(dx/dy))
+            if x <= ox and y >= oy:
+                angle = 90 + math.degrees(math.atan(dx/dy))
+            if x >= ox and y <= oy:
+                angle = 270 + math.degrees(math.atan(dx/dy))
+
+            engine.set_missile_direction(angle - 180)
+            
+
+        except:
+            print "boom"
+
+
+
+
+
+
+
+
+
 
