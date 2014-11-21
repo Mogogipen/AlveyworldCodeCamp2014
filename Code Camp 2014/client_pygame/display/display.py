@@ -89,7 +89,7 @@ class Display(BaseDisplay):
         # There are other fonts available, but they are not
         # the same on every computer.  You can read more about
         # fonts at http://www.pygame.org/docs/ref/font.html
-        self.font_size = 12
+        self.font_size = 15
         self.font = pygame.font.SysFont("Courier New",self.font_size)
 
         # Colors are specified as a triple of integers from 0 to 255.
@@ -101,13 +101,14 @@ class Display(BaseDisplay):
         self.missile_color    = (0, 0, 255)
         self.npc_color        = (255, 255, 0)
         self.wall_color       = (50, 50, 50)
-        self.text_color       = (0, 0, 255)
+        self.text_color       = (0, 40, 50)
         self.background_color = (255, 255, 255)
         self.player_image     = pygame.image.load("display/player.png")
         self.opponent_image   = pygame.image.load("display/opponent.png")
         self.missile_image    = pygame.image.load("display/missile.png")
         self.npc_image        = pygame.image.load("display/npc.png")
         self.wall_image       = pygame.image.load("display/wall.png")
+        self.background_image = pygame.image.load("display/background.png")
         return
 
     def paint_pregame(self, surface, control):
@@ -151,6 +152,7 @@ class Display(BaseDisplay):
         # background
         rect = pygame.Rect(0, 0, self.width, self.height)
         surface.fill(self.background_color, rect)
+        surface.blit(self.background_image, (0, 0))
             
         # draw each object
         objs = engine.get_objects()
