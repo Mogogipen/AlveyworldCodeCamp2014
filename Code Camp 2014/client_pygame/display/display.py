@@ -102,7 +102,7 @@ class Display(BaseDisplay):
         self.npc_color        = (255, 255, 0)
         self.wall_color       = (255, 255, 255)
         self.text_color       = (255, 255, 255)
-        self.background_color = (0, 0, 0)
+        self.background_color = (0, 255, 0)
         return
 
     def paint_pregame(self, surface, control):
