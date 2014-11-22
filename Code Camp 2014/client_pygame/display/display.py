@@ -101,7 +101,7 @@ class Display(BaseDisplay):
         self.missile_color    = (0, 0, 255)
         self.npc_color        = (255, 255, 0)
         self.wall_color       = (50, 50, 50)
-        self.text_color       = (125, 125, 125)
+        self.text_color       = (225, 225, 225)
         self.background_color = (255, 255, 255)
         self.player_image     = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png"), pygame.image.load("display/player.png")]
         self.opponent_image   = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png"), pygame.image.load("display/opponent.png")]
