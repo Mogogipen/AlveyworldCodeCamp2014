@@ -117,31 +117,6 @@ class Control(BaseControl):
         player = engine.get_object(engine.get_player_oid())
         opponent = engine.get_object(engine.get_opponent_oid())
 
-        if player:
-            experience = player.get_experience()
-            missile_mana = player.get_missile_mana()
-            move_mana = player.get_move_mana()
-            if experience >= 24.0 and move_mana >= 4.0:
-                engine.set_player_speed_fast()
-            elif experience >= 3.0 and move_mana >= 4.0:
-                engine.set_player_speed_medium()
-            elif move_mana >= 4.0:
-                engine.set_player_speed_slow()
-
-            if experience >= 30 and missile_mana >= 3.0:
-                engine.set_missile_range_long()
-            elif experience >= 9 and missile_mana >= 3.0:
-                engine.set_missile_range_medium()
-            elif missile_mana >= 3.0:
-                engine.set_missile_range_short()
-
-            if experience >= 36 and missile_mana >= 3.0:
-                engine.set_missile_power_high()
-            elif experience >= 15 and missile_mana >= 3.0:
-                engine.set_missile_power_medium()
-            elif missile_mana >= 3.0:
-                engine.set_missile_power_low()
-
         if pygame.K_UP in newkeys:
             engine.set_player_direction(270)
             engine.set_missile_direction(270)
@@ -202,6 +177,37 @@ class Control(BaseControl):
 
         return
         
+    def get_best(self, engine):
+        player = engine.get_object(engine.get_player_oid())
+
+        if player:
+            experience = player.get_experience()
+            missile_mana = player.get_missile_mana()
+            move_mana = player.get_move_mana()
+            if experience >= 24.0 and move_mana >= 4.0:
+                engine.set_player_speed_fast()
+            elif experience >= 3.0 and move_mana >= 4.0:
+                engine.set_player_speed_medium()
+            elif move_mana >= 4.0:
+                engine.set_player_speed_slow()
+
+            if experience >= 30 and missile_mana >= 3.0:
+                engine.set_missile_range_long()
+            elif experience >= 9 and missile_mana >= 3.0:
+                engine.set_missile_range_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_range_short()
+
+            if experience >= 36 and missile_mana >= 3.0:
+                engine.set_missile_power_high()
+            elif experience >= 15 and missile_mana >= 3.0:
+                engine.set_missile_power_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_power_low()
+
+    # def fire_at_will(self, engine):
+
+
     def game_control(self, engine):
         """
         This method is called every frame while the game is
@@ -316,7 +322,7 @@ class Control(BaseControl):
                     engine.set_player_speed_stop()
                     engine.fire_missile()
                 else:
-                    engine.set_player_speed_slow()
+                    self.get_best(engine)
                 
 
             except:
@@ -337,9 +343,11 @@ class Control(BaseControl):
                 theta = math.atan2(dy, dx)
                 degrees = math.degrees(theta)
                 
+                self.get_best(engine)
                 engine.set_missile_direction(degrees)
+                if self.character_closeby(engine, character, player.get_missile_range()-20):
+                    engine.fire_missile()
                 engine.set_player_direction(degrees+180)
-                engine.set_player_speed_slow()
 
             except:
                 print "error pointing at character"

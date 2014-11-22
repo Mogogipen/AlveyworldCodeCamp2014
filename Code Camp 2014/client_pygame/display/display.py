@@ -106,13 +106,14 @@ class Display(BaseDisplay):
         self.player_image     = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png"), pygame.image.load("display/player.png")]
         self.opponent_image   = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png"), pygame.image.load("display/opponent.png")]
         self.missile_image    = [pygame.image.load("display/missile1.png"), pygame.image.load("display/missile2.png")]
-        self.npc_image        = pygame.image.load("display/npc.png")
+        self.npc_images       = [pygame.image.load("display/npcd1.png"), pygame.image.load("display/npcd2.png"), pygame.image.load("display/npcd3.png"), pygame.image.load("display/npc.png")]
         self.wall_image       = pygame.image.load("display/wall.png")
         self.background_image = pygame.image.load("display/background.png")
         self.title_background = pygame.image.load("display/Space.png")
         self.player_animation = 0
         self.opponent_animation = 0
         self.animation_count2 = 0
+        self.dying_npc_animation = 0
         return
 
     def paint_pregame(self, surface, control):
@@ -169,6 +170,10 @@ class Display(BaseDisplay):
         self.animation_count2 += .25
         if self.animation_count2 >= 2:
             self.animation_count2 = 0
+
+        self.dying_npc_animation += 1./50
+        if self.dying_npc_animation >= 3:
+            self.dying_npc_animation = 0
 
         # draw each object
         objs = engine.get_objects()
@@ -228,9 +233,10 @@ class Display(BaseDisplay):
         Draws living NPCs.
         """
         if obj.is_alive():
-            color = self.npc_color
             rect = self.obj_to_rect(obj)
-            surface.blit(self.npc_image, (obj.get_px(), obj.get_py()))
+            surface.blit(self.npc_images[3], (obj.get_px(), obj.get_py()))
+        elif obj.is_dying():
+            surface.blit(self.npc_images[int(self.dying_npc_animation)], (obj.get_px(), obj.get_py()))
         return
         
     def paint_missile(self, surface, engine, control, obj, animation):
