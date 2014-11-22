@@ -103,12 +103,13 @@ class Display(BaseDisplay):
         self.wall_color       = (50, 50, 50)
         self.text_color       = (0, 40, 50)
         self.background_color = (255, 255, 255)
-        self.opponent_image   = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png")]
-        self.player_image     = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png")]
-        self.missile_image    = [pygame.image.load("display/missile.png"), pygame.image.load("display/missile2.png")]
+        self.player_image   = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png"), pygame.image.load("display/player.png")]
+        self.opponent_image     = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png"), pygame.image.load("display/player.png")]
+        self.missile_image    = [pygame.image.load("display/missile1.png"), pygame.image.load("display/missile2.png")]
         self.npc_image        = pygame.image.load("display/npc.png")
         self.wall_image       = pygame.image.load("display/wall.png")
         self.background_image = pygame.image.load("display/background.png")
+        self.title_background = pygame.image.load("display/Space.png")
         self.animation_count4 = 0
         self.animation_count2 = 0
         return
@@ -156,11 +157,16 @@ class Display(BaseDisplay):
         surface.fill(self.background_color, rect)
         surface.blit(self.background_image, (0, 0))
 
-        self.animation_count4 += .2
-        if self.animation_count4 >= 4:
-            self.animation_count4 = 0
+        # self.animation_count4 += .2
+        # if self.animation_count4 >= 4:
+        #     self.animation_count4 = 0
 
-        self.animation_count2 += .5
+        # player = engine.get_object(engine.get_player_oid())
+        # if player:
+        #     if player.get_speed() <= .5:
+        #         self.animation_count4 = 4
+
+        self.animation_count2 += .25
         if self.animation_count2 >= 2:
             self.animation_count2 = 0
 
