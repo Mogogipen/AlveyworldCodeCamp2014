@@ -103,12 +103,14 @@ class Display(BaseDisplay):
         self.wall_color       = (50, 50, 50)
         self.text_color       = (0, 40, 50)
         self.background_color = (255, 255, 255)
-        self.player_image     = pygame.image.load("display/player.png")
-        self.opponent_image   = pygame.image.load("display/opponent.png")
-        self.missile_image    = pygame.image.load("display/missile.png")
+        self.opponent_image   = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png")]
+        self.player_image     = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png")]
+        self.missile_image    = [pygame.image.load("display/missile.png"), pygame.image.load("display/missile2.png")]
         self.npc_image        = pygame.image.load("display/npc.png")
         self.wall_image       = pygame.image.load("display/wall.png")
         self.background_image = pygame.image.load("display/background.png")
+        self.animation_count4 = 0
+        self.animation_count2 = 0
         return
 
     def paint_pregame(self, surface, control):
@@ -153,7 +155,15 @@ class Display(BaseDisplay):
         rect = pygame.Rect(0, 0, self.width, self.height)
         surface.fill(self.background_color, rect)
         surface.blit(self.background_image, (0, 0))
-            
+
+        self.animation_count4 += .2
+        if self.animation_count4 >= 4:
+            self.animation_count4 = 0
+
+        self.animation_count2 += .5
+        if self.animation_count2 >= 2:
+            self.animation_count2 = 0
+
         # draw each object
         objs = engine.get_objects()
         for key in objs:
@@ -163,9 +173,9 @@ class Display(BaseDisplay):
             elif obj.is_npc():
                 self.paint_npc(surface, engine, control, obj)
             elif obj.is_missile():
-                self.paint_missile(surface, engine, control, obj)
+                self.paint_missile(surface, engine, control, obj, int(self.animation_count2))
             elif obj.is_player():
-                self.paint_player(surface, engine, control, obj)
+                self.paint_player(surface, engine, control, obj, int(self.animation_count4))
             else:
                 print "Unexpected object type: %s" % (str(obj.__class__))
                 
@@ -216,28 +226,28 @@ class Display(BaseDisplay):
             surface.blit(self.npc_image, (obj.get_px(), obj.get_py()))
         return
         
-    def paint_missile(self, surface, engine, control, obj):
+    def paint_missile(self, surface, engine, control, obj, animation):
         """
         Draws living missiles.
         """
         if obj.is_alive():
             color = self.missile_color
             rect = self.obj_to_rect(obj)
-            surface.blit(self.missile_image, (obj.get_px(), obj.get_py()))
+            surface.blit(self.missile_image[animation], (obj.get_px(), obj.get_py()))
         return
         
-    def paint_player(self, surface, engine, control, obj):
+    def paint_player(self, surface, engine, control, obj, animation):
         """
         Draws living players.
         My player is my opponent are in different colors
         """
         if obj.is_alive():
-            image = self.player_image
+            image = ""
             rect = self.obj_to_rect(obj)
             if obj.get_oid() == engine.get_player_oid():
-                image = self.player_image
+                image = self.player_image[animation]
             else:
-                image = self.opponent_image
+                image = self.opponent_image[animation]
             surface.blit(image, (obj.get_px(), obj.get_py()))
         return
 
@@ -254,7 +264,7 @@ class Display(BaseDisplay):
             obj = engine.get_object(oid)
             if obj:
                 alignment_spacing = ""
-                if len(engine.get_name()) < len(engine.get_opponent_name()):
+                if len(engine.get_name()) + 4 < len(engine.get_opponent_name()) + 10:
                     alignment_spacing = " " * ((len(engine.get_opponent_name()) + 10) - (len(engine.get_name()) + 4))
                 s = "Me: %s %s HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
                     (engine.get_name(),
@@ -273,7 +283,7 @@ class Display(BaseDisplay):
             obj = engine.get_object(oid)
             if obj:
                 alignment_spacing = ""
-                if len(engine.get_opponent_name()) < len(engine.get_name()):
+                if len(engine.get_opponent_name()) + 10 < len(engine.get_name()) + 4:
                     alignment_spacing = " " * ((len(engine.get_name()) + 4) - (len(engine.get_opponent_name()) + 10))
                 s = "Opponent: %s %s HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
                     (engine.get_opponent_name(),
@@ -286,4 +296,3 @@ class Display(BaseDisplay):
                 position_y = self.height - STATUS_BAR_HEIGHT + 6 * self.font_size / 2
                 self.draw_text_left(surface, s, self.text_color, position_x, position_y, self.font)
         return
-
