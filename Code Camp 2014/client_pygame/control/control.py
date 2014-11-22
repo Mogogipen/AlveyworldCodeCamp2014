@@ -114,6 +114,34 @@ class Control(BaseControl):
         
         (mouse_x, mouse_y) = mouse_position
         
+        player = engine.get_object(engine.get_player_oid())
+        opponent = engine.get_object(engine.get_opponent_oid())
+
+        if player:
+            experience = player.get_experience()
+            missile_mana = player.get_missile_mana()
+            move_mana = player.get_move_mana()
+            if experience >= 24.0 and move_mana >= 4.0:
+                engine.set_player_speed_fast()
+            elif experience >= 3.0 and move_mana >= 4.0:
+                engine.set_player_speed_medium()
+            elif move_mana >= 4.0:
+                engine.set_player_speed_slow()
+
+            if experience >= 30 and missile_mana >= 3.0:
+                engine.set_missile_range_long()
+            elif experience >= 9 and missile_mana >= 3.0:
+                engine.set_missile_range_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_range_short()
+
+            if experience >= 36 and missile_mana >= 3.0:
+                engine.set_missile_power_high()
+            elif experience >= 15 and missile_mana >= 3.0:
+                engine.set_missile_power_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_power_low()
+
         if pygame.K_UP in newkeys:
             engine.set_player_direction(270)
             engine.set_missile_direction(270)
@@ -144,17 +172,25 @@ class Control(BaseControl):
         elif pygame.K_w in newkeys:
             engine.set_missile_range_short()
         elif pygame.K_e in newkeys:
+            engine.set_missile_range_medium()
+        elif pygame.K_r in newkeys:
             engine.set_missile_range_long()
 
         if pygame.K_a in newkeys:
             engine.set_missile_power_none()
         elif pygame.K_s in newkeys:
             engine.set_missile_power_low()
+        elif pygame.K_d in newkeys:
+            engine.set_missile_power_medium()
+        elif pygame.K_f in newkeys:
+            engine.set_missile_power_high()
 
         if pygame.K_x in newkeys:
             self.attack_npcs(engine)
         elif pygame.K_z in newkeys:
-            self.point_at_character(engine)    
+            self.point_at_character(engine)
+        elif pygame.K_c in newkeys:
+            self.run_from_character(engine, player, opponent)
         
         
 
@@ -202,11 +238,11 @@ class Control(BaseControl):
         all = engine.get_objects()
         closest_npc = None
         for obj in all:
-            if closest_npc and engine.get_object(obj).is_npc():
+            if closest_npc and engine.get_object(obj).is_npc() and engine.get_object(obj).is_alive():
                 if self.distance_between(engine.get_object(obj).get_x(), engine.get_object(obj).get_y(), player.get_x(), player.get_y()) \
                 < self.distance_between(closest_npc.get_x(), closest_npc.get_y(), player.get_x(), player.get_y()):
                     closest_npc = engine.get_object(obj)
-            elif engine.get_object(obj).is_npc():
+            elif engine.get_object(obj).is_npc() and engine.get_object(obj).is_alive():
                 closest_npc = engine.get_object(obj)
         
         #self.opponent_closeby(engine, player)
@@ -289,7 +325,7 @@ class Control(BaseControl):
 
     def run_from_character(self, engine, player, character):
             """
-            find the character and track it down and shoot at it.
+            find the character, run from it and shoot at it.
             """
             #point missile towards opponent
                         
@@ -301,6 +337,7 @@ class Control(BaseControl):
                 theta = math.atan2(dy, dx)
                 degrees = math.degrees(theta)
                 
+                engine.set_missile_direction(degrees)
                 engine.set_player_direction(degrees+180)
                 engine.set_player_speed_slow()
 
