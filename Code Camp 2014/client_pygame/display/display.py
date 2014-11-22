@@ -250,7 +250,6 @@ class Display(BaseDisplay):
         if obj.is_alive():
             image = ""
             rect = self.obj_to_rect(obj)
-            print self.player_animation
             if obj.get_oid() == engine.get_player_oid():
                 player = engine.get_object(engine.get_player_oid())
                 if player:
