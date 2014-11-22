@@ -135,6 +135,8 @@ class Control(BaseControl):
         elif pygame.K_2 in newkeys:
             engine.set_player_speed_slow()
         elif pygame.K_3 in newkeys:
+            engine.set_player_speed_medium()
+        elif pygame.K_4 in newkeys:
             engine.set_player_speed_fast()
             
         if pygame.K_q in newkeys:
@@ -230,7 +232,18 @@ class Control(BaseControl):
         distance = self.distance_between(oppcenter[0], oppcenter[1], playercenter[0], playercenter[1])
 
         if distance < 45:
-            self.run_from_character(engine, player, opponent)
+            return True
+        return False
+
+    def character_closeby(self, engine, character, limit):
+        player = engine.get_object(engine.get_player_oid())
+        charcenter = self.get_centerpoint(character)
+        playercenter = self.get_centerpoint(player)
+        distance = self.distance_between(charcenter[0], charcenter[1], playercenter[0], playercenter[1])
+
+        if distance < limit:
+            return True
+        return False
 
     def wall_closeby(self, engine, player):
         all = engine.get_objects()
@@ -241,7 +254,8 @@ class Control(BaseControl):
             distance = self.distance_between(charcenter[0], charcenter[1], playercenter[0], playercenter[1])
 
             if distance < 45:
-                self.run_from_character(engine, player, character)
+                return True
+        return False
 
     def point_at_character(self, engine, character=None):
             """
@@ -250,7 +264,7 @@ class Control(BaseControl):
             #point missile towards opponent
             if not character:
                 character = engine.get_object(engine.get_opponent_oid())
-            player = engine.get_object(engine.get_oppent_oid())
+            player = engine.get_object(engine.get_player_oid())
                         
             try:
                 px = player.get_x() + player.get_w()/2.
@@ -262,7 +276,11 @@ class Control(BaseControl):
                 engine.set_missile_direction(degrees)
                 engine.set_player_direction(degrees)
 
-                engine.fire_missile()
+                if self.character_closeby(engine,character,player.get_missile_range()-20):
+                    engine.set_player_speed_stop()
+                    engine.fire_missile()
+                else:
+                    engine.set_player_speed_slow()
                 
 
             except:
