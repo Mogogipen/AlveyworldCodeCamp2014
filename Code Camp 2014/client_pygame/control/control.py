@@ -138,7 +138,7 @@ class Control(BaseControl):
             engine.set_player_speed_medium()
         elif pygame.K_4 in newkeys:
             engine.set_player_speed_fast()
-            
+
         if pygame.K_q in newkeys:
             engine.set_missile_range_none()
         elif pygame.K_w in newkeys:
@@ -306,6 +306,7 @@ class Control(BaseControl):
 
             except:
                 print "error pointing at character"
+
 
 
 
