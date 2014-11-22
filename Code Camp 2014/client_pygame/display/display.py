@@ -198,6 +198,7 @@ class Display(BaseDisplay):
         """
         Should process the event and decide if it needs to be displayed, or heard.
         """
+        #print event
         return
 
     # The following methods draw appropriate rectangles

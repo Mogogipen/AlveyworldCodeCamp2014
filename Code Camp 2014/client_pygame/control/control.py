@@ -4,6 +4,7 @@
 #
 
 import pygame
+import math
 from client.base_control import *
 
 class Control(BaseControl):
@@ -116,12 +117,15 @@ class Control(BaseControl):
         if pygame.K_UP in newkeys:
             engine.set_player_direction(270)
             engine.set_missile_direction(270)
+
         elif pygame.K_DOWN in newkeys:
             engine.set_player_direction(90)
             engine.set_missile_direction(90)
+
         elif pygame.K_LEFT in newkeys:
             engine.set_player_direction(180)
             engine.set_missile_direction(180)
+
         elif pygame.K_RIGHT in newkeys:
             engine.set_player_direction(0)
             engine.set_missile_direction(0)
@@ -131,20 +135,32 @@ class Control(BaseControl):
         elif pygame.K_2 in newkeys:
             engine.set_player_speed_slow()
         elif pygame.K_3 in newkeys:
+            engine.set_player_speed_medium()
+        elif pygame.K_4 in newkeys:
             engine.set_player_speed_fast()
+
         if pygame.K_q in newkeys:
             engine.set_missile_range_none()
         elif pygame.K_w in newkeys:
             engine.set_missile_range_short()
+        elif pygame.K_e in newkeys:
+            engine.set_missile_range_long()
 
         if pygame.K_a in newkeys:
             engine.set_missile_power_none()
         elif pygame.K_s in newkeys:
             engine.set_missile_power_low()
-                
+
+        if pygame.K_x in newkeys:
+            self.attack_npcs(engine)
+        elif pygame.K_z in newkeys:
+            self.point_at_character(engine)    
+        
+        
+
+
         if pygame.K_SPACE in newkeys:
             engine.fire_missile()
-
 
         self.show_info = True
 
@@ -158,5 +174,144 @@ class Control(BaseControl):
         calculations.  This method is called immediately
         following the game_input_control() method.
         """
+
+        opp = engine.get_object(engine.get_opponent_oid())
+        pl = engine.get_object(engine.get_player_oid())
+        if not pl or not opp:
+            return
+
+        # if the opponent's exeperience is higher then the players then chase npc's
+        try:
+            plex = pl.get_experience()
+            oppex = opp.get_experience()
+
+            #if plex < oppex:
+            #self.attack_npcs(engine,pl)
+            #else:
+            #    self.point_at_character(engine,pl,opp)
+
+        except:
+            print "error in game control"
+            raise
+        # if the player's experience is higher chase the opponent
+
         return
+
+    def attack_npcs(self, engine):
+        player = engine.get_object(engine.get_player_oid())
+        all = engine.get_objects()
+        closest_npc = None
+        for obj in all:
+            if closest_npc and engine.get_object(obj).is_npc():
+                if self.distance_between(engine.get_object(obj).get_x(), engine.get_object(obj).get_y(), player.get_x(), player.get_y()) \
+                < self.distance_between(closest_npc.get_x(), closest_npc.get_y(), player.get_x(), player.get_y()):
+                    closest_npc = engine.get_object(obj)
+            elif engine.get_object(obj).is_npc():
+                closest_npc = engine.get_object(obj)
+        
+        #self.opponent_closeby(engine, player)
+        #self.wall_closeby(engine, player)
+        
+
+        self.point_at_character(engine, closest_npc)
+
+    def distance_between(self,x1,y1,x2,y2):
+        d = ((x2-x1)**2 + (y2-y1)**2)**(1./2)
+        return d
+
+    def get_centerpoint(self, character):
+        px = character.get_x() + character.get_w()/2.
+        py = character.get_y() + character.get_h()/2.
+        return px,py
+
+
+    def opponent_closeby(self, engine, player):
+        opponent = engine.get_object(engine.get_opponent_oid())
+        oppcenter = self.get_centerpoint(opponent)
+        playercenter = self.get_centerpoint(player)
+        distance = self.distance_between(oppcenter[0], oppcenter[1], playercenter[0], playercenter[1])
+
+        if distance < 45:
+            return True
+        return False
+
+    def character_closeby(self, engine, character, limit):
+        player = engine.get_object(engine.get_player_oid())
+        charcenter = self.get_centerpoint(character)
+        playercenter = self.get_centerpoint(player)
+        distance = self.distance_between(charcenter[0], charcenter[1], playercenter[0], playercenter[1])
+
+        if distance < limit:
+            return True
+        return False
+
+    def wall_closeby(self, engine, player):
+        all = engine.get_objects()
+        for c in all:
+            character = engine.get_object(c)
+            charcenter = self.get_centerpoint(character)
+            playercenter = self.get_centerpoint(player)
+            distance = self.distance_between(charcenter[0], charcenter[1], playercenter[0], playercenter[1])
+
+            if distance < 45:
+                return True
+        return False
+
+    def point_at_character(self, engine, character=None):
+            """
+            find the character and track it down and shoot at it.
+            """
+            #point missile towards opponent
+            if not character:
+                character = engine.get_object(engine.get_opponent_oid())
+            player = engine.get_object(engine.get_player_oid())
+                        
+            try:
+                px = player.get_x() + player.get_w()/2.
+                py = player.get_y() + player.get_h()/2.
+                dx = character.get_x() - px
+                dy = character.get_y() - py
+                theta = math.atan2(dy, dx)
+                degrees = math.degrees(theta)
+                engine.set_missile_direction(degrees)
+                engine.set_player_direction(degrees)
+
+                if self.character_closeby(engine,character,player.get_missile_range()-20):
+                    engine.set_player_speed_stop()
+                    engine.fire_missile()
+                else:
+                    engine.set_player_speed_slow()
+                
+
+            except:
+                print "error pointing at character"
+                raise
+
+    def run_from_character(self, engine, player, character):
+            """
+            find the character and track it down and shoot at it.
+            """
+            #point missile towards opponent
+                        
+            try:
+                px = player.get_x() + player.get_w()/2.
+                py = player.get_y() + player.get_h()/2.
+                dx = character.get_x() - px
+                dy = character.get_y() - py
+                theta = math.atan2(dy, dx)
+                degrees = math.degrees(theta)
+                
+                engine.set_player_direction(degrees+180)
+                engine.set_player_speed_slow()
+
+            except:
+                print "error pointing at character"
+
+
+
+
+
+
+
+
 
