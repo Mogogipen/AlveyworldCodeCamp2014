@@ -203,7 +203,6 @@ class Display(BaseDisplay):
         Draws walls.
         """
         rect = self.obj_to_rect(obj)
-        # pygame.draw.rect(surface, self.wall_color, rect)
         surface.blit(self.wall_image, (obj.get_px(), obj.get_py()))
         return
         
@@ -214,7 +213,6 @@ class Display(BaseDisplay):
         if obj.is_alive():
             color = self.npc_color
             rect = self.obj_to_rect(obj)
-            # pygame.draw.rect(surface, color, rect)
             surface.blit(self.npc_image, (obj.get_px(), obj.get_py()))
         return
         
@@ -225,7 +223,6 @@ class Display(BaseDisplay):
         if obj.is_alive():
             color = self.missile_color
             rect = self.obj_to_rect(obj)
-            # pygame.draw.rect(surface, color, rect)
             surface.blit(self.missile_image, (obj.get_px(), obj.get_py()))
         return
         
@@ -235,15 +232,13 @@ class Display(BaseDisplay):
         My player is my opponent are in different colors
         """
         if obj.is_alive():
-            # rect = self.obj_to_rect(obj)
-            surface.blit(self.player_image, (obj.get_px(), obj.get_py()))
+            image = self.player_image
+            rect = self.obj_to_rect(obj)
             if obj.get_oid() == engine.get_player_oid():
-                color = self.player_color
-                surface.blit(self.opponent_image, (obj.get_px(), obj.get_py()))
+                image = self.player_image
             else:
-                color = self.opponent_color
-            # pygame.draw.rect(surface, color, rect)
-            surface.blit(self.player_image, (obj.get_px(), obj.get_py()))
+                image = self.opponent_image
+            surface.blit(image, (obj.get_px(), obj.get_py()))
         return
 
     def paint_game_status(self, surface, engine, control):
@@ -258,8 +253,12 @@ class Display(BaseDisplay):
         if oid > 0: 
             obj = engine.get_object(oid)
             if obj:
-                s = "Me: %s  HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
+                alignment_spacing = ""
+                if len(engine.get_name()) < len(engine.get_opponent_name()):
+                    alignment_spacing = " " * ((len(engine.get_opponent_name()) + 10) - (len(engine.get_name()) + 4))
+                s = "Me: %s %s HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
                     (engine.get_name(),
+                     alignment_spacing,
                      obj.get_health(),
                      obj.get_experience(),
                      obj.get_move_mana(),
@@ -273,8 +272,12 @@ class Display(BaseDisplay):
         if oid > 0: 
             obj = engine.get_object(oid)
             if obj:
-                s = "Opponent: %s  HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
+                alignment_spacing = ""
+                if len(engine.get_opponent_name()) < len(engine.get_name()):
+                    alignment_spacing = " " * ((len(engine.get_name()) + 4) - (len(engine.get_opponent_name()) + 10))
+                s = "Opponent: %s %s HP: %.1f  XP: %.1f Mv: %.1f Ms: %.1f" % \
                     (engine.get_opponent_name(),
+                     alignment_spacing,
                      obj.get_health(),
                      obj.get_experience(),
                      obj.get_move_mana(),
