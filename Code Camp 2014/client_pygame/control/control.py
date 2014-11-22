@@ -133,7 +133,7 @@ class Control(BaseControl):
 
         if pygame.K_r in newkeys:
             self.point_at_character(engine)
-        elif pygame.K_c in newkeys:
+        elif pygame.K_f in newkeys:
             self.attack_npcs(engine)
         elif pygame.K_v in newkeys:
             self.run_from_character(engine, player, opponent)
@@ -152,7 +152,6 @@ class Control(BaseControl):
             degrees = math.degrees(theta)
             engine.set_missile_direction(degrees)
             engine.fire_missile()
-            self.get_best(engine)
 
         self.show_info = True
 
