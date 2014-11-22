@@ -117,97 +117,47 @@ class Control(BaseControl):
         player = engine.get_object(engine.get_player_oid())
         opponent = engine.get_object(engine.get_opponent_oid())
 
-        if pygame.K_UP in newkeys:
+        if pygame.K_w in newkeys:
             engine.set_player_direction(270)
-            engine.set_missile_direction(270)
-
-        elif pygame.K_DOWN in newkeys:
-            engine.set_player_direction(90)
-            engine.set_missile_direction(90)
-
-        elif pygame.K_LEFT in newkeys:
-            engine.set_player_direction(180)
-            engine.set_missile_direction(180)
-
-        elif pygame.K_RIGHT in newkeys:
-            engine.set_player_direction(0)
-            engine.set_missile_direction(0)
-
-        if pygame.K_1 in newkeys:
-            engine.set_player_speed_stop()
-        elif pygame.K_2 in newkeys:
-            engine.set_player_speed_slow()
-        elif pygame.K_3 in newkeys:
-            engine.set_player_speed_medium()
-        elif pygame.K_4 in newkeys:
-            engine.set_player_speed_fast()
-
-        if pygame.K_q in newkeys:
-            engine.set_missile_range_none()
-        elif pygame.K_w in newkeys:
-            engine.set_missile_range_short()
-        elif pygame.K_e in newkeys:
-            engine.set_missile_range_medium()
-        elif pygame.K_r in newkeys:
-            engine.set_missile_range_long()
-
-        if pygame.K_a in newkeys:
-            engine.set_missile_power_none()
         elif pygame.K_s in newkeys:
-            engine.set_missile_power_low()
+            engine.set_player_direction(90)
+        elif pygame.K_a in newkeys:
+            engine.set_player_direction(180)
         elif pygame.K_d in newkeys:
-            engine.set_missile_power_medium()
-        elif pygame.K_f in newkeys:
-            engine.set_missile_power_high()
+            engine.set_player_direction(0)
 
-        if pygame.K_x in newkeys:
-            self.attack_npcs(engine)
-        elif pygame.K_z in newkeys:
+        if pygame.K_e in newkeys:
+            self.get_best(engine)
+        elif pygame.K_q in newkeys:
+            engine.set_player_speed_stop()
+
+        if pygame.K_r in newkeys:
             self.point_at_character(engine)
         elif pygame.K_c in newkeys:
+            self.attack_npcs(engine)
+        elif pygame.K_v in newkeys:
             self.run_from_character(engine, player, opponent)
-        
-        
-
 
         if pygame.K_SPACE in newkeys:
             engine.fire_missile()
 
+        if 1 in newbuttons:
+            oid = engine.get_player_oid()
+            player = engine.get_object(oid)
+            px = player.get_x() + player.get_w()/2.
+            py = player.get_y() + player.get_h()/2.
+            dx = mouse_x - px
+            dy = mouse_y - py
+            theta = math.atan2(dy, dx)
+            degrees = math.degrees(theta)
+            engine.set_missile_direction(degrees)
+            engine.fire_missile()
+            self.get_best(engine)
+
         self.show_info = True
 
         return
-        
-    def get_best(self, engine):
-        player = engine.get_object(engine.get_player_oid())
-
-        if player:
-            experience = player.get_experience()
-            missile_mana = player.get_missile_mana()
-            move_mana = player.get_move_mana()
-            if experience >= 24.0 and move_mana >= 4.0:
-                engine.set_player_speed_fast()
-            elif experience >= 3.0 and move_mana >= 4.0:
-                engine.set_player_speed_medium()
-            elif move_mana >= 4.0:
-                engine.set_player_speed_slow()
-
-            if experience >= 30 and missile_mana >= 3.0:
-                engine.set_missile_range_long()
-            elif experience >= 9 and missile_mana >= 3.0:
-                engine.set_missile_range_medium()
-            elif missile_mana >= 3.0:
-                engine.set_missile_range_short()
-
-            if experience >= 36 and missile_mana >= 3.0:
-                engine.set_missile_power_high()
-            elif experience >= 15 and missile_mana >= 3.0:
-                engine.set_missile_power_medium()
-            elif missile_mana >= 3.0:
-                engine.set_missile_power_low()
-
-    # def fire_at_will(self, engine):
-
-
+    
     def game_control(self, engine):
         """
         This method is called every frame while the game is
@@ -238,6 +188,35 @@ class Control(BaseControl):
         # if the player's experience is higher chase the opponent
 
         return
+    
+    def get_best(self, engine):
+        player = engine.get_object(engine.get_player_oid())
+        opponent = engine.get_object(engine.get_opponent_oid())
+
+        if player:
+            experience = player.get_experience()
+            missile_mana = player.get_missile_mana()
+            move_mana = player.get_move_mana()
+            if experience >= 24.0 and move_mana >= 5.0:
+                engine.set_player_speed_fast()
+            elif experience >= 3.0 and move_mana >= 4.0:
+                engine.set_player_speed_medium()
+            elif move_mana >= 3.0:
+                engine.set_player_speed_slow()
+
+            if experience >= 30 and missile_mana >= 4.0:
+                engine.set_missile_range_long()
+            elif experience >= 9 and missile_mana >= 3.5:
+                engine.set_missile_range_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_range_short()
+
+            if experience >= 36 and missile_mana >= 4.0:
+                engine.set_missile_power_high()
+            elif experience >= 15 and missile_mana >= 3.5:
+                engine.set_missile_power_medium()
+            elif missile_mana >= 3.0:
+                engine.set_missile_power_low()
 
     def attack_npcs(self, engine):
         player = engine.get_object(engine.get_player_oid())
@@ -351,12 +330,3 @@ class Control(BaseControl):
 
             except:
                 print "error pointing at character"
-
-
-
-
-
-
-
-
-
