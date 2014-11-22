@@ -104,13 +104,14 @@ class Display(BaseDisplay):
         self.text_color       = (125, 125, 125)
         self.background_color = (255, 255, 255)
         self.player_image     = [pygame.image.load("display/player1.png"), pygame.image.load("display/player2.png"), pygame.image.load("display/player3.png"), pygame.image.load("display/player4.png"), pygame.image.load("display/player.png")]
-        self.opponent_image   = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png"), pygame.image.load("display/player.png")]
+        self.opponent_image   = [pygame.image.load("display/opponent1.png"), pygame.image.load("display/opponent2.png"), pygame.image.load("display/opponent3.png"), pygame.image.load("display/opponent4.png"), pygame.image.load("display/opponent.png")]
         self.missile_image    = [pygame.image.load("display/missile1.png"), pygame.image.load("display/missile2.png")]
         self.npc_image        = pygame.image.load("display/npc.png")
         self.wall_image       = pygame.image.load("display/wall.png")
         self.background_image = pygame.image.load("display/background.png")
         self.title_background = pygame.image.load("display/Space.png")
-        self.animation_count4 = 0
+        self.player_animation = 0
+        self.opponent_animation = 0
         self.animation_count2 = 0
         return
 
@@ -156,6 +157,14 @@ class Display(BaseDisplay):
         rect = pygame.Rect(0, 0, self.width, self.height)
         surface.fill(self.background_color, rect)
         surface.blit(self.background_image, (0, 0))
+
+
+        self.player_animation += .2
+        if self.player_animation >= 4:
+            self.player_animation = 0
+        self.opponent_animation += .2
+        if self.opponent_animation >= 4:
+            self.opponent_animation = 0
 
         self.animation_count2 += .25
         if self.animation_count2 >= 2:
@@ -243,25 +252,17 @@ class Display(BaseDisplay):
             image = ""
             rect = self.obj_to_rect(obj)
             if obj.get_oid() == engine.get_player_oid():
-                self.animation_count4 += .2
-                if self.animation_count4 >= 4:
-                    self.animation_count4 = 0
-
                 player = engine.get_object(engine.get_player_oid())
                 if player:
                     if player.get_speed() <= .5:
-                        self.animation_count4 = 4
-                image = self.player_image[int(self.animation_count4)]
+                        self.player_animation = 4
+                image = self.player_image[int(self.player_animation)]
             else:
-                self.animation_count4 += .2
-                if self.animation_count4 >= 4:
-                    self.animation_count4 = 0
-
                 opponent = engine.get_object(engine.get_opponent_oid())
                 if opponent:
                     if opponent.get_speed() <= .5:
-                        self.animation_count4 = 4
-                image = self.opponent_image[int(self.animation_count4)]
+                        self.opponent_animation = 4
+                image = self.opponent_image[int(self.opponent_animation)]
             surface.blit(image, (obj.get_px(), obj.get_py()))
         return
 
